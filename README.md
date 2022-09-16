@@ -84,4 +84,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 ```
+## Other Parameters that may usable 
 
+```
+paddingBetweenDate // set padding between date
+colorOfSelectedDate // Change color of selected date
+colorOfEvent // Change color of the circle shape event
+isDayEnglish // To set the days in English
+isCustomDayText; // To defile that we will use a custom date language
+listCustomDay; // If you set isCustomDayText==true, the fullfill this parameter 
+
+```
