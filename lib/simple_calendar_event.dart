@@ -9,14 +9,24 @@ class SimpleCalendarEvent extends StatefulWidget {
   final double crossAxisSpacing;
   final double mainAxisSpacing;
   final double paddingBetweenDate;
+  final Color colorOfSelectedDate;
+  final Color colorOfEvent;
+  final bool isDayEnglish;
+  final bool isCustomDayText;
+  final List<String>? listCustomDay;
 
   const SimpleCalendarEvent(
-      {Key? key, required this.listEvent,
-        required this.onDateClicked,
-        this.crossAxisSpacing= 16,
-        this.mainAxisSpacing= 16,
-        this.paddingBetweenDate = 10
-      })
+      {Key? key,
+      required this.listEvent,
+      required this.onDateClicked,
+      this.crossAxisSpacing = 16,
+      this.mainAxisSpacing = 16,
+      this.paddingBetweenDate = 10,
+      this.colorOfEvent = Colors.blue,
+      this.colorOfSelectedDate = Colors.blue,
+      this.isDayEnglish = false,
+      this.isCustomDayText = false,
+      this.listCustomDay})
       : super(key: key);
   @override
   State<SimpleCalendarEvent> createState() => _SimpleCalendarEventState();
@@ -37,10 +47,9 @@ class _SimpleCalendarEventState extends State<SimpleCalendarEvent> {
   @override
   void initState() {
     lastDayOfCurrentMonth = DateTime(yearSelected, monthSelected + 1, 0);
-
     lastDayOfPrevMonth = DateTime(yearSelected, monthSelected - 1, 0);
     numberOfLastMonthDate = DateTime(yearSelected, monthSelected, 0).day;
-    days = ["MIN", "SEN", "SEL", "RAB", "KAM", "JUM", "SAB"];
+    _generateDays();
     monthNameSelected = DateFormat("MMM").format(DateTime.now());
     dateSelected = _stringDate(DateTime.now());
     _generatePrevMonthDateForCurrentMonth();
@@ -52,6 +61,20 @@ class _SimpleCalendarEventState extends State<SimpleCalendarEvent> {
 
   String _stringDate(DateTime date) {
     return DateFormat("dd/MM/yyyy").format(date);
+  }
+
+  void _generateDays(){
+    setState((){
+      if(widget.isCustomDayText && widget.listCustomDay!=null){
+        days = widget.listCustomDay!;
+      }else{
+        if(widget.isDayEnglish){
+          days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+        }else{
+          days = ["MIN", "SEN", "SEL", "RAB", "KAM", "JUM", "SAB"];
+        }
+      }
+    });
   }
 
   void _clearAllList() {
@@ -195,7 +218,10 @@ class _SimpleCalendarEventState extends State<SimpleCalendarEvent> {
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
-                          const Icon(Icons.arrow_back_ios_rounded, size: 15,),
+                          const Icon(
+                            Icons.arrow_back_ios_rounded,
+                            size: 15,
+                          ),
                           Text("Prev".toUpperCase()),
                         ],
                       ),
@@ -205,7 +231,9 @@ class _SimpleCalendarEventState extends State<SimpleCalendarEvent> {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                          "${monthNameSelected.toUpperCase()}, ${yearSelected.toString().toUpperCase()}",textAlign: TextAlign.center,),
+                        "${monthNameSelected.toUpperCase()}, ${yearSelected.toString().toUpperCase()}",
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                   InkWell(
@@ -217,7 +245,10 @@ class _SimpleCalendarEventState extends State<SimpleCalendarEvent> {
                       child: Row(
                         children: [
                           Text("Next".toUpperCase()),
-                          const Icon(Icons.arrow_forward_ios_rounded, size: 15,),
+                          const Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            size: 15,
+                          ),
                         ],
                       ),
                     ),
@@ -225,7 +256,9 @@ class _SimpleCalendarEventState extends State<SimpleCalendarEvent> {
                 ],
               ),
             ),
-            StaggeredGrid.count(
+            (widget.isCustomDayText && widget.listCustomDay==null)?Container(
+              child: const Text("Your list of day is empty"),
+            ): StaggeredGrid.count(
               crossAxisCount: 7,
               children: List.generate(
                   days.length,
@@ -271,7 +304,7 @@ class _SimpleCalendarEventState extends State<SimpleCalendarEvent> {
                 },
                 child: Container(
                   alignment: Alignment.center,
-                  padding:  EdgeInsets.all(widget.paddingBetweenDate),
+                  padding: EdgeInsets.all(widget.paddingBetweenDate),
                   child: Column(
                     children: [
                       Text(
@@ -283,16 +316,16 @@ class _SimpleCalendarEventState extends State<SimpleCalendarEvent> {
                                 : FontWeight.normal,
                             color: dateSelected ==
                                     _stringDate(dateDisplayed[index])
-                                ? Colors.blue
+                                ? widget.colorOfSelectedDate
                                 : dateDisplayed[index].month == monthSelected
                                     ? Colors.black
                                     : Colors.grey),
                       ),
                       _isContainEvents(dateDisplayed[index])
-                          ? const Icon(
+                          ? Icon(
                               Icons.circle,
                               size: 5,
-                              color: Colors.blue,
+                              color: widget.colorOfEvent,
                             )
                           : Container(
                               height: 5,
