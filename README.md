@@ -5,7 +5,7 @@ Package to create a simple calendar event on all platforms
 To use this plugin, add ```simple_calendar_event``` as a [dependency in your pubspec.yaml](https://flutter.io/platform-plugins/).
 
 <div align="center">
-<img src="https://raw.githubusercontent.com/griajobag/simple_calendar_event/main/screenshot.png"/>
+<img src="https://raw.githubusercontent.com/griajobag/simple_calendar_event/master/screenshot.png"/>
 </div>
 
 ## Example
