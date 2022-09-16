@@ -6,9 +6,17 @@ import 'package:intl/intl.dart';
 class SimpleCalendarEvent extends StatefulWidget {
   final List<DateTime> listEvent;
   final Function(DateTime?) onDateClicked;
+  final double crossAxisSpacing;
+  final double mainAxisSpacing;
+  final double paddingBetweenDate;
 
   const SimpleCalendarEvent(
-      {Key? key, required this.listEvent, required this.onDateClicked})
+      {Key? key, required this.listEvent,
+        required this.onDateClicked,
+        this.crossAxisSpacing= 16,
+        this.mainAxisSpacing= 16,
+        this.paddingBetweenDate = 10
+      })
       : super(key: key);
   @override
   State<SimpleCalendarEvent> createState() => _SimpleCalendarEventState();
@@ -119,6 +127,54 @@ class _SimpleCalendarEventState extends State<SimpleCalendarEvent> {
     }
   }
 
+  void _goToPrevMonth() {
+    setState(() {
+      setState(() {
+        _clearAllList();
+        if (monthSelected == 1) {
+          monthSelected = 12;
+          yearSelected = yearSelected - 1;
+        } else {
+          monthSelected = monthSelected - 1;
+        }
+
+        lastDayOfCurrentMonth = DateTime(yearSelected, monthSelected + 1, 0);
+
+        lastDayOfPrevMonth = DateTime(yearSelected, monthSelected - 1, 0);
+        numberOfLastMonthDate = DateTime(yearSelected, monthSelected, 0).day;
+
+        monthNameSelected =
+            DateFormat("MMM").format(DateTime(yearSelected, monthSelected));
+        _generatePrevMonthDateForCurrentMonth();
+        _generateDisplayedDate();
+        _generateNextMonthDateForCurrentMonth();
+      });
+    });
+  }
+
+  void _goToNextMonth() {
+    setState(() {
+      _clearAllList();
+      if (monthSelected == 12) {
+        monthSelected = 1;
+        yearSelected = yearSelected + 1;
+      } else {
+        monthSelected = monthSelected + 1;
+      }
+
+      lastDayOfCurrentMonth = DateTime(yearSelected, monthSelected + 1, 0);
+
+      lastDayOfPrevMonth = DateTime(yearSelected, monthSelected - 1, 0);
+      numberOfLastMonthDate = DateTime(yearSelected, monthSelected, 0).day;
+
+      monthNameSelected =
+          DateFormat("MMM").format(DateTime(yearSelected, monthSelected));
+      _generatePrevMonthDateForCurrentMonth();
+      _generateDisplayedDate();
+      _generateNextMonthDateForCurrentMonth();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -129,75 +185,41 @@ class _SimpleCalendarEventState extends State<SimpleCalendarEvent> {
               margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.all(10),
               width: MediaQuery.of(context).size.width,
-              alignment: Alignment.centerRight,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   InkWell(
                     onTap: () {
-                      setState(() {
-                        _clearAllList();
-                        if (monthSelected == 1) {
-                          monthSelected = 12;
-                          yearSelected = yearSelected - 1;
-                        } else {
-                          monthSelected = monthSelected - 1;
-                        }
-
-                        lastDayOfCurrentMonth =
-                            DateTime(yearSelected, monthSelected + 1, 0);
-
-                        lastDayOfPrevMonth =
-                            DateTime(yearSelected, monthSelected - 1, 0);
-                        numberOfLastMonthDate =
-                            DateTime(yearSelected, monthSelected, 0).day;
-
-                        monthNameSelected = DateFormat("MMM")
-                            .format(DateTime(yearSelected, monthSelected));
-                        _generatePrevMonthDateForCurrentMonth();
-                        _generateDisplayedDate();
-                        _generateNextMonthDateForCurrentMonth();
-                      });
+                      _goToPrevMonth();
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text("Prev".toUpperCase()),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.arrow_back_ios_rounded, size: 15,),
+                          Text("Prev".toUpperCase()),
+                        ],
+                      ),
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                        "${monthNameSelected.toUpperCase()}, ${yearSelected.toString().toUpperCase()}"),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                          "${monthNameSelected.toUpperCase()}, ${yearSelected.toString().toUpperCase()}",textAlign: TextAlign.center,),
+                    ),
                   ),
                   InkWell(
                     onTap: () {
-                      setState(() {
-                        _clearAllList();
-                        if (monthSelected == 12) {
-                          monthSelected = 1;
-                          yearSelected = yearSelected + 1;
-                        } else {
-                          monthSelected = monthSelected + 1;
-                        }
-
-                        lastDayOfCurrentMonth =
-                            DateTime(yearSelected, monthSelected + 1, 0);
-
-                        lastDayOfPrevMonth =
-                            DateTime(yearSelected, monthSelected - 1, 0);
-                        numberOfLastMonthDate =
-                            DateTime(yearSelected, monthSelected, 0).day;
-
-                        monthNameSelected =
-                            _stringDate(DateTime(yearSelected, monthSelected));
-                        _generatePrevMonthDateForCurrentMonth();
-                        _generateDisplayedDate();
-                        _generateNextMonthDateForCurrentMonth();
-                      });
+                      _goToNextMonth();
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text("Next".toUpperCase()),
+                      child: Row(
+                        children: [
+                          Text("Next".toUpperCase()),
+                          const Icon(Icons.arrow_forward_ios_rounded, size: 15,),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -205,30 +227,51 @@ class _SimpleCalendarEventState extends State<SimpleCalendarEvent> {
             ),
             StaggeredGrid.count(
               crossAxisCount: 7,
-
               children: List.generate(
                   days.length,
-                  (index) =>
-                      Center(child: Text(days[index]))), // add some space
+                  (index) => Center(
+                          child: Text(
+                        days[index],
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ))), // add some space
             ),
-
+            const Padding(padding: EdgeInsets.only(top: 10, bottom: 10)),
             AlignedGridView.count(
               shrinkWrap: true,
               crossAxisCount: 7,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
+              crossAxisSpacing: widget.crossAxisSpacing,
+              mainAxisSpacing: widget.mainAxisSpacing,
               itemCount: dateDisplayed.length,
               itemBuilder: (context, index) => InkWell(
                 onTap: () => {
                   widget.onDateClicked(dateDisplayed[index]),
                   setState(() {
                     dateSelected = _stringDate(dateDisplayed[index]);
+                    if (dateDisplayed[index].year == yearSelected) {
+                      if (monthSelected > dateDisplayed[index].month) {
+                        _goToPrevMonth();
+                      } else if (monthSelected < dateDisplayed[index].month) {
+                        _goToNextMonth();
+                      }
+                    } else {
+                      yearSelected = dateDisplayed[index].year;
+                      if (monthSelected == 12) {
+                        _goToNextMonth();
+                      } else if (monthSelected == 1) {
+                        _goToPrevMonth();
+                      } else {
+                        if (monthSelected > dateDisplayed[index].month) {
+                          _goToPrevMonth();
+                        } else if (monthSelected < dateDisplayed[index].month) {
+                          _goToNextMonth();
+                        }
+                      }
+                    }
                   }),
                 },
                 child: Container(
                   alignment: Alignment.center,
-                  padding: const EdgeInsets.all(10),
-                  margin: const EdgeInsets.all(10),
+                  padding:  EdgeInsets.all(widget.paddingBetweenDate),
                   child: Column(
                     children: [
                       Text(

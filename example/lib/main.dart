@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -48,6 +50,8 @@ class _MyHomePageState extends State<MyHomePage> {
         DateTime(2022,09,15),
         DateTime(2022,09,22),
       ],
+        crossAxisSpacing: defaultTargetPlatform == TargetPlatform.android ?1:16,
+        mainAxisSpacing:  defaultTargetPlatform == TargetPlatform.android ?1:16,
         onDateClicked: (date){
           if(kIsWeb){
             Fluttertoast.showToast(

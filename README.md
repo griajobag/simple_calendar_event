@@ -1,35 +1,88 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
-
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
-
-## Features
-
-TODO: List what your package can do. Maybe include images, gifs, or videos.
-
-## Getting started
-
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+# simple_calendar_event
+Package to create a simple calendar event on all platforms
 
 ## Usage
+To use this plugin, add ```simple_calendar_event``` as a [dependency in your pubspec.yaml](https://flutter.io/platform-plugins/).
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+<div align="center">
+<img src="https://raw.githubusercontent.com/griajobag/simple_calendar_event/main/screenshot.png"/>
+</div>
+
+## Example
 
 ```dart
-const like = 'sample';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:simple_calendar_event/simple_calendar_event.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const MyHomePage(title: "Calendar Event Usage"),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: SimpleCalendarEvent(listEvent: [
+          DateTime(2022,09,11),
+          DateTime(2022,09,10),
+          DateTime(2022,09,15),
+          DateTime(2022,09,22),
+        ],
+          crossAxisSpacing: defaultTargetPlatform == TargetPlatform.android ?1:16,
+          mainAxisSpacing:  defaultTargetPlatform == TargetPlatform.android ?1:16,
+          onDateClicked: (date){
+          // Implement your logic here
+            if(kIsWeb){
+              Fluttertoast.showToast(
+                  msg: date.toString(),
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.CENTER,
+                  timeInSecForIosWeb: 1,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
+                  fontSize: 16.0
+              );
+            }
+          },
+        )// This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
 ```
 
 ## Additional information
