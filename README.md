@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 ```
-## Other Parameters that may usable 
+## Other Parameters that may useful
 
 ```
 paddingBetweenDate // set padding between date
